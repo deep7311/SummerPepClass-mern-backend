@@ -12,7 +12,6 @@ export const register = async (req, res) => {
       name,
       email,
       password: hashedpwd,
-      role: "user",
     };
     const result = await userModel.create(user);
     res.status(201).json(result);
