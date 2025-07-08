@@ -80,3 +80,52 @@ export const login = async (req, res) => {
     res.status(400).json({ message: "Something went wrong" });
   }
 }
+
+
+export const getUserProfile = async (req, res) => {
+  try {
+    const id = req.params.id
+    const user = await userModel.findById(id);
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(400).json({ message: "Something went wrong" });
+  }
+}
+
+
+export const updateUserProfile = async (req, res) => {
+  try {
+    const id = req.params.id
+    const user = await userModel.findByIdAndUpdate(id, req.body, { new: true });
+    if (user) {
+      res.status(201).json(user);
+    } else {
+      res.status(400).json({ message: "User not found" });
+    }
+  } catch (error) {
+    res.status(400).json({ message: "Something went wrong" });
+  }
+}
+
+
+export const updateUserPassword = async (req, res) => {
+  try {
+    const id = req.params.id
+    const user = await userModel.findById(id);
+    if (user) {
+      const isMatch = await bcrypt.compare(req.body.oldPassword, user.password);
+      if (isMatch) {
+        const hashedpwd = await bcrypt.hash(req.body.newPassword, 10);
+        user.password = hashedpwd;
+        await user.save();
+        res.status(201).json(user);
+      } else {
+        res.status(400).json({ message: "Invalid old password" });
+      }
+    } else {
+      res.status(400).json({ message: "User not found" });
+    }
+  } catch (error) {
+    res.status(400).json({ message: "Something went wrong" });
+  }
+}
