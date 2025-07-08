@@ -6,13 +6,13 @@ dotenv.config();
 
 export const register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
     const hashedpwd = await bcrypt.hash(password, 10);
     const user = {
       name,
       email,
       password: hashedpwd,
-      role,
+      role
     };
     const result = await userModel.create(user);
     res.status(201).json(result);
