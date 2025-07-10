@@ -7,7 +7,7 @@ const userRouter = express.Router();
 // user register
 userRouter.post("/register", register);
 
-// user login 
+// user login
 userRouter.post("/login", login);
 
 // get all user details only admin
@@ -23,12 +23,12 @@ userRouter.delete("/:id", authenticate, authorize("admin"), deleteUser);
 userRouter.put("/:id", authenticate, authorize("admin"), updateUser);
 
 // get user details by id only user
-userRouter.get("/:id/profile", authenticate, authorize("user"), getUserProfile);
+userRouter.get("/:id/profile", authenticate, getUserProfile);
 
 // update user details by id only user
-userRouter.put("/:id/profile", authenticate, authorize("user"), updateUserProfile);
+userRouter.put("/:id/profile", authenticate, updateUserProfile);
 
 // update user password by id only user
-userRouter.put("/:id/password", authenticate, authorize("user"), updateUserPassword);
+userRouter.put("/:id/password", authenticate, updateUserPassword);
 
 export default userRouter

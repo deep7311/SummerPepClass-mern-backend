@@ -14,7 +14,7 @@ export const register = async (req, res) => {
       password: hashedpwd,
     };
     const result = await userModel.create(user);
-    res.status(201).json(result);
+    res.status(201).json({message: "User registered successfully", result, success: true});
   } catch (err) {
     console.log(err);
     res.status(400).json({ message: "Something went wrong" });
