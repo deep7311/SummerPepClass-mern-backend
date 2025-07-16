@@ -24,8 +24,15 @@ export const register = async (req, res) => {
 
 export const getAllUser = async (req, res) => {
   try {
-    const result = await userModel.find();
-    res.status(200).json(result);
+    const {page = 1, limit = 3, search = ""} = req.query
+    const skip = (page - 1) * limit
+    const count = await userModel.countDocuments({name: {$regex: search, $options: 'i'}})
+    const total = Math.ceil(count / limit)
+    const users = await userModel.find({name: {$regex: search, $options: "i"}})
+    .skip(skip)
+    .limit(limit)
+    .sort({createdAt: -1})
+    res.status(200).json({users, totalPages: total, success: true});
   } catch (err) {
     console.log(err);
     res.status(400).json({ message: "Something went wrong" });
@@ -35,13 +42,29 @@ export const getAllUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   try {
-    const id = req.params.id
-    const user = await userModel.findByIdAndUpdate(id, req.body, { new: true });
-    res.status(201).json(user);
+    const id = req.params.id;
+    const { name, email, password, role } = req.body;
+
+    const updateData = { name, email, role };
+
+    if (password && password.trim() !== "") {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateData.password = hashedPassword;
+    }
+
+    const updatedUser = await userModel.findByIdAndUpdate(id, updateData, { new: true });
+
+    res.status(200).json({
+      success: true,
+      message: "User updated successfully",
+      updatedUser,
+    });
+
   } catch (error) {
-    res.status(400).json({ message: "Something went wrong" });
+    console.log(error);
+    res.status(400).json({ success: false, message: "Something went wrong" });
   }
-}
+};
 
 
 export const deleteUser = async (req, res) => {
@@ -63,6 +86,7 @@ export const login = async (req, res) => {
       const isMatch = await bcrypt.compare(password, user.password);
       if (isMatch) {
         const userObj = {
+          _id: user._id,
           name: user.name,
           email: user.email,
           role: user.role,
@@ -127,5 +151,26 @@ export const updateUserPassword = async (req, res) => {
     }
   } catch (error) {
     res.status(400).json({ message: "Something went wrong" });
+  }
+}
+
+
+export const addUserByAdmin = async (req, res) => {
+  try {
+    const {name, email, password, role} = req.body
+    const user = await userModel.findOne({email})
+    if(user) {
+      return res.status(400).json({message: "User already exists"})
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10)
+    
+    const newUser = await userModel.create({name, email, password: hashedPassword, role})
+
+    res.status(201).json({message: "New User Added successfully", newUser, success: true})
+
+  } catch (error) {
+    console.log(error)
+    res.status(400).json({message: "Something went wrong"})
   }
 }
