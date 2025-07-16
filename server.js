@@ -26,11 +26,11 @@ mongoose.connect(`mongodb+srv://${dbuser}:${dbpass}@cluster0.0c8m8ik.mongodb.net
   });
 });
 
-app.use(cors())
-// app.use(cors({
-//   origin: 'http://localhost:5173',
-//   credentials: true,
-// }));
+// app.use(cors())
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true,
+}));
 app.use(express.json());
 app.use(express.static("public"))
 
