@@ -143,12 +143,12 @@ export const updateUserPassword = async (req, res) => {
         const hashedpwd = await bcrypt.hash(req.body.newPassword, 10);
         user.password = hashedpwd;
         await user.save();
-        res.status(201).json(user);
+        res.status(201).json({user, message: "Password updated successfully", success: true});
       } else {
-        res.status(400).json({ message: "Invalid old password" });
+        res.status(400).json({ message: "Invalid old password", success: false });
       }
     } else {
-      res.status(400).json({ message: "User not found" });
+      res.status(400).json({ message: "User not found", success: false });
     }
   } catch (error) {
     res.status(400).json({ message: "Something went wrong" });
