@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import productRouter from "./routes/product.route.js";
 import orderRouter from "./routes/order.route.js";
+import adminDashboardRoute from "./routes/dashboard.route.js"
 dotenv.config();
 const app = express();
 
@@ -48,3 +49,6 @@ app.use("/api/users", userRouter);
 app.use("/api/products", productRouter);
 
 app.use("/api/orders", orderRouter);
+
+//route for admin dashboard
+app.use('/api/admin', adminDashboardRoute)
